@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Create release
-        uses: ../actions/create-release@main
+        uses: ../../actions/create-release@main
         with:
           secrets: ${{ toJSON(secrets) }}
           vars: ${{ toJSON(vars) }}
