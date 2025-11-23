@@ -28,6 +28,13 @@ runs:
         elif [[ "${{ github.ref_type }}" = "tag" ]]
         then
           branch_name=`git branch --remote --contains tags/${{ github.ref_name }} | cut -d '/' -f 2`
+        
+          if [[ "$branch_name" = "" ]]
+          then
+            echo "Checkout action requires \"fetch-tags: 'true'\""
+            exit 1
+          fi
+        
           branch_name_lines=`echo $branch_name | wc -l | xargs`
         
           if [[ $branch_name_lines != 1 ]]
