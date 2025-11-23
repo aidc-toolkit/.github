@@ -1,0 +1,102 @@
+name: Build, test, publish
+description: Build, optionally test, and optionally publish to NPM
+
+inputs:
+  vars:
+    description: JSON representation of workflow vars object
+    required: true
+
+runs:
+  using: composite
+
+  steps:
+    - name: Dump vars
+      shell: bash
+      run: |
+        cat << EOF
+        ${{ toJSON(vars) }}
+        EOF
+
+    - name: Dump GitHub context
+      shell: bash
+      run: |
+        cat << EOF
+        ${{ toJSON(github) }}
+        EOF
+
+    - name: Setup node
+      uses: actions/setup-node@v6
+      with:
+        node-version: ${{ fromJSON(inputs.vars).NODE_VERSION }}
+        registry-url: https://registry.npmjs.org/
+
+    - name: Start terminal session (pre build)
+      if: fromJSON(inputs.vars).TERMINAL_PRE_BUILD == 'true'
+      uses: mxschmitt/action-tmate@v3
+
+    - name: Build
+      id: build
+      shell: bash
+      run: |
+        # Get the name property.
+        name=`grep "^  \"name\": " package.json | cut -d "\"" -f 4 -s`
+        
+        # Get the version property.
+        version=`grep "^  \"version\": " package.json | cut -d "\"" -f 4 -s`
+        
+        # Get the label on the version property if any, minus pre-release identifier if any.
+        label=`echo $version | cut -d "-" -f 2 -s | cut -d "." -f 1`
+        
+        # Save the properties for future steps.
+        echo "name=$name" >> $GITHUB_OUTPUT
+        echo "version=$version" >> $GITHUB_OUTPUT
+        echo "label=label" >> $GITHUB_OUTPUT
+
+        npm install
+        
+        # If version has a label, build in development mode.
+        if [[ label != "" ]]
+        then
+          npm run build:dev
+        else
+          npm run build:release
+        fi
+
+    - name: Start terminal session (post build)
+      if: fromJSON(inputs.vars).TERMINAL_POST_BUILD == 'true'
+      uses: mxschmitt/action-tmate@v3
+
+    - name: Test
+      shell: bash
+      run: |
+        # Run test script if present.
+        npm run test --if-present
+
+    - name: Publish
+      shell: bash
+      run: |
+        name="${{ steps.build.outputs.name }}"
+        version="${{ steps.build.outputs.version }}"
+        label="${{ steps.build.outputs.label }}"
+        
+        # If version has a label, use it as the tag.
+        if [[ $label != "" ]]
+        then
+          tag_args="--tag $label"
+        fi
+        
+        if [[ "${{ github.event_name }}" != "release" ]]
+        then
+          dry_run_arg="--dry-run"
+        fi
+        
+        # Create .npmignore to exclude hidden directories.
+        echo /.\*/ > .npmignore
+        
+        npm publish --access public $tag_args $dry_run_arg
+        
+        # If the latest version has the same label as this version, replace with this version.
+        if [[ $label != "" && "$label" = `npm view $name version | cut -d "-" -f 2 -s | cut -d "." -f 1` ]]
+        then
+          npm dist-tag add $name@$version latest $dry_run_arg
+        fi
