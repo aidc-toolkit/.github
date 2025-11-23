@@ -1,7 +1,6 @@
 name: Test reference branch
 
 on:
-  workflow_call:
   push:
   release:
     types: [published]
@@ -16,7 +15,7 @@ jobs:
 
       - name: Reference branch
         id: ref-branch
-        uses: aidc-toolkit/.github/actions/ref-branch@v0.9
+        uses: aidc-toolkit/.github/actions/ref-branch@main
 
       - name: Show branch
         run: |
