@@ -4,12 +4,16 @@ on:
   workflow_call:
   push:
   release:
+    types: [published]
 
 jobs:
   test-ref-branch:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout default repository
+        uses: actions/checkout@v5
+
       - name: Reference branch
         id: ref-branch
         uses: aidc-toolkit/.github/actions/ref-branch@v0.9
