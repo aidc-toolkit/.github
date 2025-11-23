@@ -1,0 +1,20 @@
+name: Test reference branch
+
+on:
+  workflow_call:
+  push:
+  release:
+
+jobs:
+  test-ref-branch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Reference branch
+        id: ref-branch
+        uses: aidc-toolkit/.github/actions/ref-branch@main
+
+      - name: Show branch
+        run: |
+          echo "branch=${{ steps.ref-branch.outputs.branch }}"
+          echo "branch_name=${{ steps.ref-branch.outputs.branch_name }}"
