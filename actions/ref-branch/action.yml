@@ -13,6 +13,9 @@ runs:
   using: composite
 
   steps:
+    - name: Start terminal session
+      uses: mxschmitt/action-tmate@v3
+
     - name: Reference branch
       id: ref-branch
       shell: bash
