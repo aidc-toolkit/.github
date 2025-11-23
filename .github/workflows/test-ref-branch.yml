@@ -1,0 +1,23 @@
+name: Test reference branch
+
+on:
+  push:
+  release:
+    types: [published]
+
+jobs:
+  test-ref-branch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout default repository
+        uses: actions/checkout@v5
+
+      - name: Reference branch
+        id: ref-branch
+        uses: aidc-toolkit/.github/actions/ref-branch@main
+
+      - name: Show branch
+        run: |
+          echo "branch=${{ steps.ref-branch.outputs.branch }}"
+          echo "branch_name=${{ steps.ref-branch.outputs.branch_name }}"

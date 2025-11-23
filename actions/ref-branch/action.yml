@@ -1,0 +1,51 @@
+name: Reference branch
+description: Parse the GitHub context reference properties to determine the branch on which the workflow is running
+
+outputs:
+  branch:
+    description: Fully formed reference of the branch
+    value: ${{ steps.ref-branch.outputs.branch }}
+  branch_name:
+    description: Short reference name of the branch
+    value: ${{ steps.ref-branch.outputs.branch_name }}
+
+runs:
+  using: composite
+
+  steps:
+    - name: Reference branch
+      id: ref-branch
+      shell: bash
+      run: |
+        if [[ "${{ github.ref_type }}" = "branch" ]]
+        then
+          # Reference is branch.
+          branch="${{ github.ref }}"
+          branch_name="${{ github.ref_name }}"
+        elif [[ "${{ github.ref_type }}" = "tag" ]]
+        then
+          # Tags are required to resolve the branch.
+          git fetch --tags
+        
+          branch_name=`git branch --remote --contains tags/${{ github.ref_name }} | cut -d '/' -f 2`
+        
+          branch_name_lines=`echo $branch_name | wc -l | xargs`
+        
+          # Tag must have a unique branch.
+          if [[ $branch_name_lines != 1 ]]
+          then
+            echo "Tag ${{ github.ref_name }} is not associated with a unique branch"
+            exit 1
+          fi
+        
+          branch="refs/heads/$branch_name"
+        else
+          echo "Unsupported reference type ${{ github.ref_type }}"
+          exit 1
+        fi
+        
+        echo "Branch is $branch"
+        echo "Branch name is $branch_name"
+        
+        echo "branch=$branch" >> $GITHUB_OUTPUT
+        echo "branch_name=$branch_name" >> $GITHUB_OUTPUT
