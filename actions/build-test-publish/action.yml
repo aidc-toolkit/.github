@@ -58,11 +58,6 @@ runs:
         # Run test script if present.
         npm run test --if-present
 
-    - name: Exchange token
-      uses: electron/npm-trusted-auth-action@v1.0.0
-      with:
-        package-name: ${{ steps.build.outputs.name }}
-
     - name: Publish
       shell: bash
       run: |
@@ -89,5 +84,5 @@ runs:
         # If the latest version has the same label as this version, replace with this version.
         if [[ "$label" != "" && "$label" = `npm view $name version | cut -d "-" -f 2 -s | cut -d "." -f 1` ]]
         then
-          npm dist-tag add $name@$version latest $dry_run_arg
+          echo "Run: npm dist-tag add $name@$version latest $dry_run_arg"
         fi
