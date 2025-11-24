@@ -59,7 +59,7 @@ runs:
         npm run test --if-present
 
     - name: Exchange token
-      uses: electron/npm-trusted-auth-action@v1
+      uses: electron/npm-trusted-auth-action@v1.0.0
       with:
         package-name: ${{ steps.build.outputs.name }}
 
