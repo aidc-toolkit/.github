@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout default repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Reference branch
         id: ref-branch
