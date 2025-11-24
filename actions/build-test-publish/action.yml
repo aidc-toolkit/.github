@@ -10,20 +10,6 @@ runs:
   using: composite
 
   steps:
-    - name: Dump vars
-      shell: bash
-      run: |
-        cat << EOF
-        ${{ toJSON(vars) }}
-        EOF
-
-    - name: Dump GitHub context
-      shell: bash
-      run: |
-        cat << EOF
-        ${{ toJSON(github) }}
-        EOF
-
     - name: Setup node
       uses: actions/setup-node@v6
       with:
