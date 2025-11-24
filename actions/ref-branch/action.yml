@@ -1,6 +1,12 @@
 name: Reference branch
 description: Parse the GitHub context reference properties to determine the branch on which the workflow is running
 
+inputs:
+  path:
+    description: Path to which repository has been checked out
+    required: false
+    default: .
+
 outputs:
   branch:
     description: Fully formed reference of the branch
@@ -16,6 +22,7 @@ runs:
     - name: Reference branch
       id: ref-branch
       shell: bash
+      working-directory: ${{ inputs.path }}
       run: |
         if [[ "${{ github.ref_type }}" = "branch" ]]
         then
