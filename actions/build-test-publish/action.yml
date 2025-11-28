@@ -38,7 +38,7 @@ runs:
         echo "version=$version" >> $GITHUB_OUTPUT
         echo "label=$label" >> $GITHUB_OUTPUT
 
-        npm install
+        npm clean-install
         
         # If version has a label, build in development mode.
         if [[ "$label" != "" ]]
