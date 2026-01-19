@@ -40,12 +40,12 @@ runs:
 
         npm clean-install
         
-        # If version has a label, build in development mode.
+        # If version has a label, build in that mode.
         if [[ "$label" != "" ]]
         then
-          npm run build:dev
+          npm run build:$label
         else
-          npm run build:release
+          npm run build:prod
         fi
 
     - name: Start terminal session (post build)
