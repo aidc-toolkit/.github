@@ -2,8 +2,6 @@ name: Test reference branch
 
 on:
   push:
-  release:
-    types: [published]
 
 jobs:
   test-ref-branch:
