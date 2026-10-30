@@ -1,5 +1,5 @@
 name: Build, test, publish
-description: Build, optionally test, and optionally publish to NPM
+description: Build the project, optionally test it, and publish it to NPM.
 
 inputs:
   node_version:
@@ -19,7 +19,7 @@ runs:
 
   steps:
     - name: Setup node
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v7
       with:
         node-version: ${{ inputs.node_version }}
         registry-url: https://registry.npmjs.org/

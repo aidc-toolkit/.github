@@ -1,5 +1,5 @@
 name: Reference branch
-description: Parse the GitHub context reference properties to determine the branch on which the workflow is running
+description: Parse the GitHub context reference properties to determine the branch on which the workflow is running.
 
 inputs:
   path:
